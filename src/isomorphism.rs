@@ -2,6 +2,7 @@ use fixedbitset::FixedBitSet;
 use std::marker;
 use std::collections::HashMap;
 use std::hash::Hash;
+use std::sync::Arc;
 
 use super::graph::{Graph, IndexType, NodeIndex};
 use super::{EdgeType, Incoming};
@@ -204,7 +205,7 @@ where
 pub fn is_isomorphic_edge_labeling<N, Ty, Ix, E: Hash + Eq>(
     g0: &Graph<N, E, Ty, Ix>,
     g1: &Graph<N, E, Ty, Ix>,
-    permutations: Vec<HashMap<E, E>>
+    permutations: Arc<Vec<HashMap<E, E>>>
 ) -> bool
 where
     Ty: EdgeType,
@@ -577,7 +578,7 @@ fn try_match_edge_permute<N, Ty, Ix, E: Hash + Eq>(
     mut st: &mut [Vf2State<Ty, Ix>; 2],
     g0: &Graph<N, E, Ty, Ix>,
     g1: &Graph<N, E, Ty, Ix>,
-    permutations: Vec<HashMap<E, E>>
+    permutations: Arc<Vec<HashMap<E, E>>>
 ) -> Option<bool>
 where
     Ty: EdgeType,
@@ -747,7 +748,7 @@ where
 
         // semantic feasibility: compare associated data for edges
         let mut edges_are_isomorphic = false;
-        for perms in &permutations {
+        for k in 0..permutations.len() {
             let mut edge_labels_work = true;
             'indicies: for j in graph_indices.clone() {
                 let mut edges = g[j].neighbors(nodes[j]).detach();
@@ -763,7 +764,7 @@ where
                     }
                     match g[1 - j].find_edge(nodes[1 - j], m_neigh) {
                         Some(m_edge) => {
-                            if perms[&g[j][n_edge]] != g[1 - j][m_edge] {
+                            if permutations[k][&g[j][n_edge]] != g[1 - j][m_edge] {
                                 edge_labels_work = false;
                                 break 'indicies;
                             }
@@ -785,7 +786,7 @@ where
                         }
                         match g[1 - j].find_edge(m_neigh, nodes[1 - j]) {
                             Some(m_edge) => {
-                                if perms[&g[j][n_edge]] != g[1 - j][m_edge] {
+                                if permutations[k][&g[j][n_edge]] != g[1 - j][m_edge] {
                                     edge_labels_work = false;
                                     break 'indices;
                                 }
