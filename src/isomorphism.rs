@@ -202,6 +202,7 @@ where
 }
 
 /// Check if isomorphic up to edgelabeling
+/*
 pub fn is_isomorphic_edge_labeling<N, Ty, Ix, E: Hash + Eq>(
     g0: &Graph<N, E, Ty, Ix>,
     g1: &Graph<N, E, Ty, Ix>,
@@ -218,11 +219,12 @@ where
     let mut st = [Vf2State::new(g0), Vf2State::new(g1)];
     try_match_edge_permute(&mut st, g0, g1, permutations).unwrap_or(false)
 }
-/*
+*/
+
 pub fn is_isomorphic_edge_labeling<N, Ty, Ix, E: Hash + Eq>(
     g0: &Graph<N, E, Ty, Ix>,
     g1: &Graph<N, E, Ty, Ix>,
-    permutations: Vec<HashMap<E, E>>
+    permutations: Arc<Vec<HashMap<E, E>>>
 ) -> bool
 where
     Ty: EdgeType,
@@ -233,9 +235,9 @@ where
     }
 
     let mut st = [Vf2State::new(g0), Vf2State::new(g1)];
-    for perms in permutations {
+    for i in 0..permutations.len() {
         if try_match(&mut st, g0, g1, &mut |_x: &N , _y: &N| true, &mut |x: &E , y: &E| { 
-            match perms.get(x) {
+            match permutations[i].get(x) {
                 Some(mut value) => &mut value== &y,
                 None => false
             }}).unwrap_or(false) 
@@ -245,7 +247,6 @@ where
     }
     return false;
 }
-*/
 
 trait SemanticMatcher<T> {
     fn enabled() -> bool;
