@@ -100,7 +100,7 @@ unsafe impl IndexType for u8 {
 }
 
 /// Node identifier.
-#[cfg_attr(feature = "serde-1", derive(Seralize, Deseralize))]
+#[cfg_attr(feature = "serde-1", derive(Deserialize, Serialize))]
 #[derive(Copy, Clone, Default, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct NodeIndex<Ix = DefaultIx>(Ix);
 
