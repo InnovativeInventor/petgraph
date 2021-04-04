@@ -18,6 +18,9 @@ use crate::visit::{IntoEdges, IntoEdgesDirected, IntoNodeReferences};
 #[cfg(feature = "serde-1")]
 mod serialization;
 
+#[cfg(feature = "serde-1")]
+use serde::{Deserialize, Serialize};
+
 /// The default integer type for graph indices.
 /// `u32` is the default to reduce the size of the graph's data and improve
 /// performance in the common case.
@@ -97,6 +100,7 @@ unsafe impl IndexType for u8 {
 }
 
 /// Node identifier.
+#[cfg_attr(feature = "serde-1", derive(Seralize, Deseralize))]
 #[derive(Copy, Clone, Default, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct NodeIndex<Ix = DefaultIx>(Ix);
 
